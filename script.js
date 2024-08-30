@@ -8,9 +8,8 @@ let dinosaurLocation = 16;
 let dinosaur = document.createElement("img");
 dinosaur.src = "Assets//dinosaur-vector.jpg";
 document.getElementById(dinosaurLocation).appendChild(dinosaur);
-setImageSize();
 
-let treeLocationSets = [[31], [30, 31], [31]];
+let treeLocationSets = [[31], [30, 31], [31], [15]];
 let trees = [];
 let treeNum = 0;
 
@@ -31,12 +30,12 @@ function createTrees() {
             img.id = trees[i][j];
             img.src = "Assets//vector-black-white-tree-23990445.jpg";
             img.style.visibility = "hidden";    
-            document.body.appendChild(img);
-            setImageSize();
+            document.body.appendChild(img);            
         }
     }
 }
 createTrees();
+setImageSize();
 
 function setImageSize() {
     let images = document.querySelectorAll("img");
@@ -46,45 +45,57 @@ function setImageSize() {
     });
 }
 
-let jumpTime = 0;
+function landDino() {
+    dinosaurLocation += RESET_POS;
+    document.getElementById(dinosaurLocation).appendChild(dinosaur);     
+}
 
 window.addEventListener("keydown", function (moveDino) {         
     if (moveDino.code === "ArrowUp") { 
-        let jumpDino = dinosaurLocation - RESET_POS;        
-        document.getElementById(jumpDino).appendChild(dinosaur);
-        jumpTime = time;     
-    }      
+        dinosaurLocation -= RESET_POS;        
+        document.getElementById(dinosaurLocation).appendChild(dinosaur);               
+        setTimeout(landDino, 3000);          
+    } 
+    if (moveDino.code === "ArrowDown") {
+        landDino();
+    }     
 });
 
-function landDino() {
-    if (jumpTime + 2 <= time) {
-        document.getElementById(dinosaurLocation).appendChild(dinosaur);        
-    }
-}
-
 let prevTime = 0;
-let postionsActive = 1;
+let positionsActive = 1;
 
 function moveTrees() {
     if (time - prevTime === ACTIVATE_NEXT_POS) {
-        ++postionsActive;
+        ++positionsActive;
         prevTime = time;
     }
-    for (let i = 0; i < postionsActive; ++i) {
+    for (let i = 0; i < positionsActive; ++i) {
         for (let j = 0; j < treeLocationSets[i].length; ++j) {
             treeLocationSets[i][j] -= MOVE_TREE;
             if (treeLocationSets[i][j] === MAX_LEFT) {
                 treeLocationSets[i][j] += RESET_POS;                             
+            } else if (treeLocationSets[i][j] === 0) {
+                treeLocationSets[i][j] += 14;
             }
             document.getElementById(trees[i][j]).style.visibility = 
                 "visible";          
             document.getElementById(treeLocationSets[i][j])
                 .appendChild(document.getElementById(trees[i][j]));               
-            if (treeLocationSets[i][j] < dinosaurLocation) {
-               // checkCollision(asteroidPositionSets[i][j]);   
+            if (treeLocationSets[i][j] === dinosaurLocation) {
+                checkCollision(treeLocationSets[i][j]);   
             }               
         }
     }
+}
+
+function checkCollision(location) {                 
+    clearInterval(intervalID); 
+    document.getElementById(location).innerHTML = " ";
+    document.getElementById(location).appendChild(dinosaur); 
+    document.getElementById("playerPoints").innerHTML = `You scored ${time}` + 
+        ` points`;    
+    time = 0;
+    document.getElementById("ReloadPageButton").style.visibility = "visible";           
 }
 
 let time = 0;
@@ -93,8 +104,7 @@ let intervalID;
 function increaseTime() {    
     ++time;
     document.getElementById("Time").innerHTML = time;   
-    moveTrees();
-    landDino();
+    moveTrees();   
 }
     
 function startTimer() {
