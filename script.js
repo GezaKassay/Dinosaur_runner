@@ -2,14 +2,15 @@ const MAX_LEFT = 15;
 const MOVE_TREE = 1;
 const ACTIVATE_NEXT_POS = 10;
 const RESET_POS = 15;
+const ACTIVATE_FLY_POS = 28;
 
 
 let dinosaurLocation = 16;
 let dinosaur = document.createElement("img");
-dinosaur.src = "Assets//dinosaur-vector.jpg";
+dinosaur.src = "Assets//Tyrannosaurus-vector.jpg";
 document.getElementById(dinosaurLocation).appendChild(dinosaur);
 
-let treeLocationSets = [[31], [30, 31], [31], [15]];
+let treeLocationSets = [[31], [30, 31], [31]];
 let trees = [];
 let treeNum = 0;
 
@@ -35,6 +36,33 @@ function createTrees() {
     }
 }
 createTrees();
+
+let flyDinoLocations = [[15], [15]];
+let flyDinos = [];
+let flyDinoNum = 0;
+
+function createFlyDinoMatrix() {
+    for (let i = 0; i < flyDinoLocations.length; ++i) {
+        flyDinos[i] = [];
+        for (let j = 0; j < flyDinoLocations[i].length; ++j) { 
+            flyDinos[i][j] = `flyDino${++flyDinoNum}`;              
+        }
+    }
+}
+createFlyDinoMatrix();
+
+function createFlyDinos() {
+    for (let i = 0; i < flyDinos.length; ++i) {
+        for (let j = 0; j < flyDinos[i].length; ++j) {            
+            let img = document.createElement("img");
+            img.id = flyDinos[i][j];
+            img.src = "Assets//Pterodactyl-vector.jpg";
+            img.style.visibility = "hidden";    
+            document.body.appendChild(img);  
+        }
+    }
+}
+createFlyDinos();
 setImageSize();
 
 function setImageSize() {
@@ -50,14 +78,17 @@ function landDino() {
     document.getElementById(dinosaurLocation).appendChild(dinosaur);     
 }
 
+let timeoutID;
+
 window.addEventListener("keydown", function (moveDino) {         
     if (moveDino.code === "ArrowUp") { 
         dinosaurLocation -= RESET_POS;        
         document.getElementById(dinosaurLocation).appendChild(dinosaur);               
-        setTimeout(landDino, 3000);          
+        timeoutID = setTimeout(landDino, 3000);          
     } 
     if (moveDino.code === "ArrowDown") {
-        landDino();
+        clearInterval(timeoutID);
+        landDino();       
     }     
 });
 
@@ -65,7 +96,8 @@ let prevTime = 0;
 let positionsActive = 1;
 
 function moveTrees() {
-    if (time - prevTime === ACTIVATE_NEXT_POS) {
+    if (time - prevTime === ACTIVATE_NEXT_POS && positionsActive < 
+        treeLocationSets.length) {
         ++positionsActive;
         prevTime = time;
     }
@@ -74,15 +106,39 @@ function moveTrees() {
             treeLocationSets[i][j] -= MOVE_TREE;
             if (treeLocationSets[i][j] === MAX_LEFT) {
                 treeLocationSets[i][j] += RESET_POS;                             
-            } else if (treeLocationSets[i][j] === 0) {
-                treeLocationSets[i][j] += 14;
-            }
+            }         
             document.getElementById(trees[i][j]).style.visibility = 
                 "visible";          
             document.getElementById(treeLocationSets[i][j])
-                .appendChild(document.getElementById(trees[i][j]));               
+                .appendChild(document.getElementById(trees[i][j]));                        
             if (treeLocationSets[i][j] === dinosaurLocation) {
                 checkCollision(treeLocationSets[i][j]);   
+            }               
+        }
+    }
+}
+
+let flyDinoPos = 0;
+let someNum = 0;
+
+function moveFlyDino() {
+    if (time - someNum === ACTIVATE_FLY_POS && flyDinoPos < 
+        flyDinoLocations.length) {
+        ++flyDinoPos; 
+        someNum = 16;    
+    }
+    for (let i = 0; i < flyDinoPos; ++i) {
+        for (let j = 0; j < flyDinoLocations[i].length; ++j) {
+            flyDinoLocations[i][j] -= MOVE_TREE;
+            if (flyDinoLocations[i][j] === 0) {
+                flyDinoLocations[i][j] += RESET_POS;
+            }            
+            document.getElementById(flyDinos[i][j]).style.visibility = 
+                "visible";          
+            document.getElementById(flyDinoLocations[i][j])
+                .appendChild(document.getElementById(flyDinos[i][j]));                        
+            if (flyDinoLocations[i][j] === dinosaurLocation) {
+                checkCollision(flyDinoLocations[i][j]);   
             }               
         }
     }
@@ -104,7 +160,8 @@ let intervalID;
 function increaseTime() {    
     ++time;
     document.getElementById("Time").innerHTML = time;   
-    moveTrees();   
+    moveTrees();    
+    moveFlyDino();       
 }
     
 function startTimer() {
