@@ -119,13 +119,13 @@ function moveTrees() {
 }
 
 let flyDinoPos = 0;
-let someNum = 0;
+let appearTime = 0;
 
 function moveFlyDino() {
-    if (time - someNum === ACTIVATE_FLY_POS && flyDinoPos < 
+    if (time - appearTime === ACTIVATE_FLY_POS && flyDinoPos < 
         flyDinoLocations.length) {
         ++flyDinoPos; 
-        someNum = 16;    
+        appearTime = 16;    
     }
     for (let i = 0; i < flyDinoPos; ++i) {
         for (let j = 0; j < flyDinoLocations[i].length; ++j) {
