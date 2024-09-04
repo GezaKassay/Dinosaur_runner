@@ -1,8 +1,9 @@
 const MAX_LEFT = 15;
-const MOVE_TREE = 1;
-const ACTIVATE_NEXT_POS = 10;
+const MOVE_OBJECT = 1;
+const ACTIVATE_NEXT_TREE_POS = 10;
 const RESET_POS = 15;
-const ACTIVATE_FLY_POS = 28;
+const ACTIVATE_FLY = 29;
+const ACTIVATE_NEXT_FLY = 5;
 
 
 let dinosaurLocation = 16;
@@ -37,7 +38,7 @@ function createTrees() {
 }
 createTrees();
 
-let flyDinoLocations = [[15], [15]];
+let flyDinoLocations = [[14, 15], [15], [15]];
 let flyDinos = [];
 let flyDinoNum = 0;
 
@@ -84,7 +85,7 @@ window.addEventListener("keydown", function (moveDino) {
     if (moveDino.code === "ArrowUp") { 
         dinosaurLocation -= RESET_POS;        
         document.getElementById(dinosaurLocation).appendChild(dinosaur);               
-        timeoutID = setTimeout(landDino, 3000);          
+        timeoutID = setTimeout(landDino, 1500);          
     } 
     if (moveDino.code === "ArrowDown") {
         clearInterval(timeoutID);
@@ -96,14 +97,14 @@ let prevTime = 0;
 let positionsActive = 1;
 
 function moveTrees() {
-    if (time - prevTime === ACTIVATE_NEXT_POS && positionsActive < 
+    if (time - prevTime === ACTIVATE_NEXT_TREE_POS && positionsActive < 
         treeLocationSets.length) {
         ++positionsActive;
         prevTime = time;
     }
     for (let i = 0; i < positionsActive; ++i) {
         for (let j = 0; j < treeLocationSets[i].length; ++j) {
-            treeLocationSets[i][j] -= MOVE_TREE;
+            treeLocationSets[i][j] -= MOVE_OBJECT;
             if (treeLocationSets[i][j] === MAX_LEFT) {
                 treeLocationSets[i][j] += RESET_POS;                             
             }         
@@ -118,18 +119,18 @@ function moveTrees() {
     }
 }
 
-let flyDinoPos = 0;
-let appearTime = 0;
+let flyDinoPos = 1;
+let appearTime = ACTIVATE_FLY;
 
 function moveFlyDino() {
-    if (time - appearTime === ACTIVATE_FLY_POS && flyDinoPos < 
+    if (time - appearTime === ACTIVATE_NEXT_FLY && flyDinoPos < 
         flyDinoLocations.length) {
         ++flyDinoPos; 
-        appearTime = 16;    
+        appearTime = time;    
     }
     for (let i = 0; i < flyDinoPos; ++i) {
         for (let j = 0; j < flyDinoLocations[i].length; ++j) {
-            flyDinoLocations[i][j] -= MOVE_TREE;
+            flyDinoLocations[i][j] -= MOVE_OBJECT;
             if (flyDinoLocations[i][j] === 0) {
                 flyDinoLocations[i][j] += RESET_POS;
             }            
@@ -160,13 +161,15 @@ let intervalID;
 function increaseTime() {    
     ++time;
     document.getElementById("Time").innerHTML = time;   
-    moveTrees();    
-    moveFlyDino();       
+    moveTrees();
+    if (time >= ACTIVATE_FLY) {
+        moveFlyDino(); 
+    }       
 }
     
 function startTimer() {
     document.getElementById("Time").innerHTML = "0";
-    intervalID = setInterval(increaseTime, 1000);    
+    intervalID = setInterval(increaseTime, 500);    
 }
 
 function startAndHide() {
