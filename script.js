@@ -5,13 +5,30 @@ const RESET_POS = 15;
 const ACTIVATE_FLY = 29;
 const ACTIVATE_NEXT_FLY = 5;
 
+function tableCreate() {
+    let cellID = 0;
+    let table = document.createElement("table");    
+    table.style.border = "1px solid black";  
+    for (let i = 0; i < 2; ++i) {
+        let row = table.insertRow();
+        for (let j = 0; j < 15; ++j) {
+            let cell = row.insertCell();
+            cell.id = ++cellID;          
+            cell.style.height = "100px";            
+            cell.style.width = "87px";               
+        }
+    }
+    document.getElementById("tableContainer").appendChild(table);   
+}
+tableCreate();
 
 let dinosaurLocation = 16;
 let dinosaur = document.createElement("img");
 dinosaur.src = "Assets//Tyrannosaurus-vector.jpg";
 document.getElementById(dinosaurLocation).appendChild(dinosaur);
 
-let treeLocationSets = [[31], [30, 31], [31]];
+
+const treeLocationSets = [[31], [30, 31], [31]];
 let trees = [];
 let treeNum = 0;
 
@@ -38,7 +55,7 @@ function createTrees() {
 }
 createTrees();
 
-let flyDinoLocations = [[14, 15], [15], [15]];
+const flyDinoLocations = [[14, 15], [15], [15]];
 let flyDinos = [];
 let flyDinoNum = 0;
 
@@ -69,8 +86,8 @@ setImageSize();
 function setImageSize() {
     let images = document.querySelectorAll("img");
     images.forEach((image) => {
-        image.style.width = "50px"; 
         image.style.height = "90px";
+        image.style.width = "50px";
     });
 }
 
