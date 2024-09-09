@@ -4,23 +4,22 @@ const ACTIVATE_NEXT_TREE_POS = 10;
 const RESET_POS = 15;
 const ACTIVATE_FLY = 29;
 const ACTIVATE_NEXT_FLY = 5;
+const DELAY_TIME = 500;
+const DELAY_JUMP = 1500;
 
-function tableCreate() {
+function createTable() {
     let cellID = 0;
-    let table = document.createElement("table");    
-    table.style.border = "1px solid black";  
+    let table = document.createElement("table");   
     for (let i = 0; i < 2; ++i) {
         let row = table.insertRow();
         for (let j = 0; j < 15; ++j) {
             let cell = row.insertCell();
-            cell.id = ++cellID;          
-            cell.style.height = "100px";            
-            cell.style.width = "87px";               
+            cell.id = ++cellID;                
         }
     }
     document.getElementById("tableContainer").appendChild(table);   
 }
-tableCreate();
+createTable();
 
 let dinosaurLocation = 16;
 let dinosaur = document.createElement("img");
@@ -29,7 +28,7 @@ document.getElementById(dinosaurLocation).appendChild(dinosaur);
 
 
 const treeLocationSets = [[31], [30, 31], [31]];
-let trees = [];
+const trees = [];
 let treeNum = 0;
 
 function createTreeMatrix() {
@@ -56,7 +55,7 @@ function createTrees() {
 createTrees();
 
 const flyDinoLocations = [[14, 15], [15], [15]];
-let flyDinos = [];
+const flyDinos = [];
 let flyDinoNum = 0;
 
 function createFlyDinoMatrix() {
@@ -81,15 +80,6 @@ function createFlyDinos() {
     }
 }
 createFlyDinos();
-setImageSize();
-
-function setImageSize() {
-    let images = document.querySelectorAll("img");
-    images.forEach((image) => {
-        image.style.height = "90px";
-        image.style.width = "50px";
-    });
-}
 
 function landDino() {
     dinosaurLocation += RESET_POS;
@@ -102,7 +92,7 @@ window.addEventListener("keydown", function (moveDino) {
     if (moveDino.code === "ArrowUp") { 
         dinosaurLocation -= RESET_POS;        
         document.getElementById(dinosaurLocation).appendChild(dinosaur);               
-        timeoutID = setTimeout(landDino, 1500);          
+        timeoutID = setTimeout(landDino, DELAY_JUMP);          
     } 
     if (moveDino.code === "ArrowDown") {
         clearInterval(timeoutID);
@@ -114,8 +104,8 @@ let prevTime = 0;
 let positionsActive = 1;
 
 function moveTrees() {
-    if (time - prevTime === ACTIVATE_NEXT_TREE_POS && positionsActive < 
-        treeLocationSets.length) {
+    if (time - prevTime === ACTIVATE_NEXT_TREE_POS && 
+        positionsActive < treeLocationSets.length) {
         ++positionsActive;
         prevTime = time;
     }
@@ -140,8 +130,8 @@ let flyDinoPos = 1;
 let appearTime = ACTIVATE_FLY;
 
 function moveFlyDino() {
-    if (time - appearTime === ACTIVATE_NEXT_FLY && flyDinoPos < 
-        flyDinoLocations.length) {
+    if (time - appearTime === ACTIVATE_NEXT_FLY && 
+        flyDinoPos < flyDinoLocations.length) {
         ++flyDinoPos; 
         appearTime = time;    
     }
@@ -186,7 +176,7 @@ function increaseTime() {
     
 function startTimer() {
     document.getElementById("Time").innerHTML = "0";
-    intervalID = setInterval(increaseTime, 500);    
+    intervalID = setInterval(increaseTime, DELAY_TIME);    
 }
 
 function startAndHide() {
